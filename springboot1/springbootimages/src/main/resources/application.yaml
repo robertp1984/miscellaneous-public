@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: springbootimages
+  data:
+    mongodb:
+      uri: mongodb://root:password@localhost:27017/?tls=true
+      database: images
+  rabbitmq:
+    host: localhost
+    port: 5671
+    username: myuser
+    password: secret
+    ssl:
+      enabled: true
+  ssl:
+    bundle:
+      jks:
+        server:
+          key:
+            alias: "springbootimages"
+          keystore:
+            location: "classpath:keystore.p12"
+            password: "password"
+            type: "PKCS12"
+        client:
+          truststore:
+            certificate: "classpath:truststore.p12"
+            password: "password"
+
+server:
+  port: 8081
+  ssl:
+    bundle: server
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,metrics,cache,prometheus
+  endpoint:
+    health:
+      show-details: always
