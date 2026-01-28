@@ -1,6 +1,5 @@
 FROM postgres:18.0
 
-COPY docker-entrypoint-initdb.d/*  /docker-entrypoint-initdb.d
 COPY config/ca.crt /etc/postgresql/ca.crt
 COPY config/server.crt /etc/postgresql/server.crt
 COPY config/server.key /etc/postgresql/server.key

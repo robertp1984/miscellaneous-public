@@ -11,9 +11,11 @@ import lombok.NonNull;
 public class TourRatingDTO {
     @NonNull
     private String tourCode;
-    private int clientId;
+    @NonNull
+    private Long clientId;
     @NonNull
     private String comment;
+
     private int rating;
 
 }

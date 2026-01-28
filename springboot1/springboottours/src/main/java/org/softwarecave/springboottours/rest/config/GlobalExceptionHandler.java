@@ -1,5 +1,6 @@
 package org.softwarecave.springboottours.rest.config;
 
+import org.softwarecave.springboottours.db.repo.NoSuchClientException;
 import org.softwarecave.springboottours.db.repo.NoSuchTourException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     public ResponseEntity<Object> handleNoSuchTourException(NoSuchTourException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        return  createResponseEntity(pd, null, HttpStatus.NOT_FOUND, request);
+    }
+
+    public ResponseEntity<Object> handleNoSuchClientException(NoSuchClientException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         return  createResponseEntity(pd, null, HttpStatus.NOT_FOUND, request);
     }

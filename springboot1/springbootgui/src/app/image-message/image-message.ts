@@ -1,5 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { ImageMessage } from '../models/image-message.model';
 
 @Component({
@@ -9,15 +9,16 @@ import { ImageMessage } from '../models/image-message.model';
   styleUrl: './image-message.css',
 })
 export class ImageMessageComponent {
-  @Input() dataItem: any;
-  @Output() onDelete = new EventEmitter<ImageMessage>();
+  dataItem = input.required<ImageMessage>();
+  onDelete = output<ImageMessage>();
 
   deleteImageMessage(): void {
-    this.onDelete.emit(this.dataItem);
+    this.onDelete.emit(this.dataItem());
+
   }
 
-  getOriginalFilenameClass() : string {
-    switch(this.dataItem.contentType) {
+  getOriginalFilenameClass(): string {
+    switch (this.dataItem().contentType) {
       case "image/png":
         return "bi-filetype-png";
       case "text/plain":

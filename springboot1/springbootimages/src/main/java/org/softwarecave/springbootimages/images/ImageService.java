@@ -43,9 +43,9 @@ public class ImageService {
         }
     }
 
-    public Image generateAndSaveImageByDescription(@NonNull String description) {
+    public Image generateAndSaveImageByDescription(@NonNull String description) throws JsonProcessingException {
         Image image = imageGenerationService.generateImageByDescription(description);
-        imageRepository.save(image);
+        saveImage(image);
         return image;
     }
 }

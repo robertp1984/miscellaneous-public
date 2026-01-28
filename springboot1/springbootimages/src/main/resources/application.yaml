@@ -5,6 +5,8 @@ spring:
     mongodb:
       uri: mongodb://root:password@localhost:27017/?tls=true
       database: images
+    rest:
+      base-path: "/api/v1/datarest/"
   rabbitmq:
     host: localhost
     port: 5671
@@ -41,3 +43,14 @@ management:
   endpoint:
     health:
       show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  name: '@project.name@'
+  description: '@project.description@'
+  version: '@project.version@'
+  java:
+    runtimeName: ${java.runtime.name}
+    runtimeVersion: ${java.runtime.version}

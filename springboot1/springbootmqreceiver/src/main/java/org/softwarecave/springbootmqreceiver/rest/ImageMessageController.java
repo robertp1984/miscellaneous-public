@@ -1,5 +1,6 @@
 package org.softwarecave.springbootmqreceiver.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.softwarecave.springbootmqreceiver.messaging.ImageMessage;
@@ -28,6 +29,7 @@ public class ImageMessageController {
     }
 
     @GetMapping
+    @Operation(summary = "Returns a list of all image messages ")
     public List<ImageMessage> getImageMessages() {
         log.info("Called getImageMessages");
         return imageMessageService.getAll();

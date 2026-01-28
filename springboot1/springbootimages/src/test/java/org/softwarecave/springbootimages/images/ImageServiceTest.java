@@ -92,7 +92,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    void generateAndSaveImageByDescription_generatesSavesAndReturnsImage() {
+    void generateAndSaveImageByDescription_generatesSavesAndReturnsImage() throws JsonProcessingException {
         when(imageGenerationService.generateImageByDescription("desc")).thenReturn(sampleImage);
 
         Image result = imageService.generateAndSaveImageByDescription("desc");
@@ -100,6 +100,8 @@ public class ImageServiceTest {
         assertThat(result).isSameAs(sampleImage);
         verify(imageGenerationService).generateImageByDescription("desc");
         verify(imageRepository).save(sampleImage);
+        verify(queueSender).publishImagesSavedMessage(any());
+
     }
 }
 

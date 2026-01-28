@@ -7,8 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.softwarecave.springboottours.db.dto.TourRatingDTO;
+import org.softwarecave.springboottours.db.model.Client;
 import org.softwarecave.springboottours.db.model.Tour;
 import org.softwarecave.springboottours.db.model.TourRating;
+import org.softwarecave.springboottours.db.repo.ClientRepository;
 import org.softwarecave.springboottours.db.repo.NoSuchTourException;
 import org.softwarecave.springboottours.db.repo.TourRatingRepository;
 import org.softwarecave.springboottours.db.repo.TourRepository;
@@ -33,6 +35,9 @@ public class TourRatingServiceTest {
     private TourRepository tourRepository;
 
     @Mock
+    private ClientRepository clientRepository;
+
+    @Mock
     private TourRatingRepository tourRatingRepository;
 
     @Test
@@ -40,7 +45,8 @@ public class TourRatingServiceTest {
         long id = 10000L;
         doReturn(Optional.empty()).when(tourRepository).findById(id);
 
-        assertThrows(NoSuchTourException.class, () -> tourRatingService.addTourRating(id, createDummyTourRatingDTO()));
+        Client client = new Client(1L, "Joe", "Doe", "joe@example.com");
+        assertThrows(NoSuchTourException.class, () -> tourRatingService.addTourRating(id, createDummyTourRatingDTO(client)));
 
         verify(tourRepository, times(1)).findById(id);
         verifyNoInteractions(tourRatingRepository);
@@ -49,26 +55,30 @@ public class TourRatingServiceTest {
     @Test
     public void testAddTourRating_Success() {
         long id = 1000L;
-        TourRatingDTO tourRatingDTO = createDummyTourRatingDTO();
+
+        Client client = new Client(1L, "Joe", "Doe", "joe@example.com");
+        TourRatingDTO tourRatingDTO = createDummyTourRatingDTO(client);
         Tour tour = new Tour();
         doReturn(Optional.of(tour)).when(tourRepository).findById(id);
+        doReturn(Optional.of(client)).when(clientRepository).findById(tourRatingDTO.getClientId());
         doReturn(null).when(tourRatingRepository).save(any(TourRating.class));
 
         tourRatingService.addTourRating(id, tourRatingDTO);
 
         ArgumentCaptor<TourRating> tourRatingArgumentCaptor = ArgumentCaptor.forClass(TourRating.class);
         verify(tourRepository, times(1)).findById(id);
+        verify(clientRepository, times(1)).findById(client.getId());
         verify(tourRatingRepository, times(1)).save(tourRatingArgumentCaptor.capture());
         assertThat(tourRatingArgumentCaptor.getValue())
-                .hasFieldOrPropertyWithValue("clientId", tourRatingDTO.getClientId())
+                .hasFieldOrPropertyWithValue("client.id", tourRatingDTO.getClientId())
                 .hasFieldOrPropertyWithValue("comment", tourRatingDTO.getComment())
                 .hasFieldOrPropertyWithValue("score", tourRatingDTO.getRating());
     }
 
-    private TourRatingDTO createDummyTourRatingDTO() {
+    private TourRatingDTO createDummyTourRatingDTO(Client client) {
         TourRatingDTO dto = new TourRatingDTO();
         dto.setTourCode("AA");
-        dto.setClientId(1);
+        dto.setClientId(client.getId());
         dto.setComment("Great tour");
         dto.setRating(5);
         return dto;

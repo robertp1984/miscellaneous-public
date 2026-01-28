@@ -1,5 +1,6 @@
 package org.softwarecave.springbootimages.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
@@ -63,7 +64,7 @@ public class ImagesController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generates a new image using AI and stores into database",
             description = "The operation can be accessed by sending string 'sunny day' using post to this sample URI http://localhost:8081/images/newGeneratedImage/ The generated image will be returned in the response.")
-    public ResponseEntity<byte[]> newGeneratedImageByDescription(@RequestBody @NonNull String description) {
+    public ResponseEntity<byte[]> newGeneratedImageByDescription(@RequestBody @NonNull String description) throws IOException {
         log.info("Generating a new image with description {}", description);
 
         Image imageObject = imageService.generateAndSaveImageByDescription(description);

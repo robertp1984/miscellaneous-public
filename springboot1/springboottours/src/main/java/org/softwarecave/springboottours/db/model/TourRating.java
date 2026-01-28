@@ -1,5 +1,6 @@
 package org.softwarecave.springboottours.db.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,17 +27,27 @@ public class TourRating {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tour_rating_seq")
     @SequenceGenerator(name = "tour_rating_seq", sequenceName = "tour_rating_seq", allocationSize = 1)
     @EqualsAndHashCode.Exclude
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "tour_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @NotNull
     private Tour tour;
 
-    private int clientId;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @NotNull
+    private Client client;
 
+    @NotBlank
+    @Column(name = "comment")
     private String comment;
 
+    @Column(name = "score")
     private int score;
 }

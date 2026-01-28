@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: springboottours
+  jpa:
+    hibernate:
+      ddl-auto: none
+  flyway:
+    enabled: false

@@ -11,6 +11,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    rest:
+      base-path: "/api/v1/datarest/"
   ssl:
     bundle:
       jks:
@@ -40,4 +43,14 @@ management:
   endpoint:
     health:
       show-details: always
+  info:
+    env:
+      enabled: true
 
+info:
+  name: '@project.name@'
+  description: '@project.description@'
+  version: '@project.version@'
+  java:
+    runtimeName: ${java.runtime.name}
+    runtimeVersion: ${java.runtime.version}

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
     Optional<Tour> findByCode(String code);
