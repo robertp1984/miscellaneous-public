@@ -1,4 +1,9 @@
 name: springboot
+
+networks:
+  backend-network:
+    driver: bridge
+
 services:
   postgresql:
     image: springboot-postgres:18.0
@@ -16,7 +21,8 @@ services:
     hostname: postgresql
     ports:
       - "5432:5432"
-
+    networks:
+      - backend-network
 
   springboottours:
     image: springboottours
@@ -34,6 +40,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
       - "8080:8080"
+    networks:
+      - backend-network
 
   mongo:
     image: mongo:8.0.15
@@ -56,6 +64,8 @@ services:
       - --tlsCAFile
       - /etc/mongo/ca.crt
       - --tlsAllowConnectionsWithoutCertificates
+    networks:
+      - backend-network
 
   rabbitmq:
     image: rabbitmq:4.2.0-management
@@ -71,6 +81,8 @@ services:
       - "5671:5671"
       - "15671:15671"
       - "15691:15691"
+    networks:
+      - backend-network
 
   springbootimages:
     image: springbootimages
@@ -92,6 +104,8 @@ services:
       - AWS_BEARER_TOKEN_BEDROCK=__OBFUSCATED__
     ports:
       - "8081:8081"
+    networks:
+      - backend-network
 
   springbootmqreceiver:
     image: springbootmqreceiver
@@ -112,6 +126,8 @@ services:
       - SPRING_RABBITMQ_PASSWORD=secret
     ports:
       - "8082:8082"
+    networks:
+      - backend-network
 
   prometheus:
     image: prom/prometheus:v3.7.3
@@ -124,6 +140,8 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--web.config.file=/etc/prometheus/web.yml"
+    networks:
+      - backend-network
 
   grafana:
     image: grafana/grafana:12.1
@@ -136,3 +154,5 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
       - prometheus
+    networks:
+      - backend-network

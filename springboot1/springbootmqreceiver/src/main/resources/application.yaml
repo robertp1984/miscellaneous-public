@@ -8,10 +8,10 @@ spring:
     password: secret
     ssl:
       enabled: true
+  mongodb:
+    uri: mongodb://root:password@localhost:27017/?tls=true
+    database: events
   data:
-    mongodb:
-      uri: mongodb://root:password@localhost:27017/?tls=true
-      database: events
     rest:
       base-path: "/api/v1/datarest/"
   ssl:

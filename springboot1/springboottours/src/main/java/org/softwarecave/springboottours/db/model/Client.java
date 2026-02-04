@@ -9,7 +9,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -29,15 +29,18 @@ public class Client {
     private Long id;
 
     @Column(name = "first_name")
+    @NotNull
     @NotBlank
     private String firstName;
 
     @Column(name = "last_name")
+    @NotNull
     @NotBlank
     private String lastName;
 
     @Column(name = "email")
-    @Email
+    @NotNull
     @NotBlank
+    @Email
     private String email;
 }

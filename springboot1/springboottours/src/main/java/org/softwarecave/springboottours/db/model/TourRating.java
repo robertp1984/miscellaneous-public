@@ -16,6 +16,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.softwarecave.springboottours.db.model.validation.TourRatingValue;
 
 @Entity
 @Table(name = "TOUR_RATING")
@@ -44,10 +45,12 @@ public class TourRating {
     @NotNull
     private Client client;
 
-    @NotBlank
     @Column(name = "comment")
+    @NotNull
+    @NotBlank
     private String comment;
 
     @Column(name = "score")
+    @TourRatingValue
     private int score;
 }

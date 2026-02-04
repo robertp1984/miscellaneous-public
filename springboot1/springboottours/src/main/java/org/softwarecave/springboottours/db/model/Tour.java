@@ -33,14 +33,17 @@ public class Tour {
     private Long id;
 
     @Column(name = "code")
+    @NotNull
     @NotBlank
     private String code;
 
     @Column(name = "name")
+    @NotNull
     @NotBlank
     private String name;
 
     @Column(name = "description")
+    @NotNull
     @NotBlank
     private String description;
 

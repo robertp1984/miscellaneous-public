@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,10 +31,12 @@ public class TourPackage implements Serializable {
     private Long id;
 
     @Column(name = "code")
+    @NotNull
     @NotBlank
     private String code;
 
     @Column(name = "name")
+    @NotNull
     @NotBlank
     private String name;
 
