@@ -2,10 +2,12 @@ package org.softwarecave.springbootplayground.note;
 
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
+import org.softwarecave.springbootplayground.note.service.StickyNoteService;
+import org.softwarecave.springbootplayground.note.model.StickyNote;
+import org.softwarecave.springbootplayground.note.model.StickyNoteLink;
+import org.softwarecave.springbootplayground.note.model.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -195,6 +197,7 @@ public class StickyNoteServiceIntegrationTest {
         stickyNote1.setTitle("Note1");
         var stickyNote2 = createStickyNoteWith2Links();
         stickyNote2.setTitle("Note2");
+        @SuppressWarnings("unused")
         var addedStickyNote1 = stickyNoteService.addStickyNote(stickyNote1);
         var addedStickyNote2 = stickyNoteService.addStickyNote(stickyNote2);
 
