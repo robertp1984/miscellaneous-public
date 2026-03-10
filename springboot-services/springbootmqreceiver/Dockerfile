@@ -1,6 +1,10 @@
 FROM amazoncorretto:25.0.0-alpine
 
+RUN addgroup app && adduser -D -G app app
+
 WORKDIR /app
+RUN chown app:app /app
+USER app
 
 COPY target/springbootmqreceiver*.jar springbootmqreceiver.jar
 COPY src/main/resources/keystore.p12 keystore.p12

@@ -14,21 +14,18 @@ import java.util.List;
 @Configuration
 public class WebSecurityConfig {
 
-    @Value("${app.cors.allowedOrigins}")
-    private String corsAllowedOrigins;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
         http.authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .anyRequest().anonymous())
-                .cors(cors -> corsConfigurationSource())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable());
         return http.build();
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowedOrigins}") String corsAllowedOrigins) {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(corsAllowedOrigins.split(",")));
         configuration.setAllowedMethods(List.of("GET", "HEAD", "POST", "DELETE", "PUT", "OPTIONS", "PATCH"));
