@@ -9,7 +9,10 @@ import org.apache.kafka.streams.TopologyTestDriver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,12 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BankTransactionAggregatorTest {
 
     private TopologyTestDriver testDriver;
+    private JsonMapper jsonMapper;
 
     @BeforeEach
     public void setup() {
         BankTransactionAggregator bankTransactionAggregator = new BankTransactionAggregator();
         Topology topology = bankTransactionAggregator.createTopology();
         testDriver = new TopologyTestDriver(topology);
+        jsonMapper = new JsonMapper();
     }
 
     @AfterEach
@@ -32,9 +37,7 @@ public class BankTransactionAggregatorTest {
 
     @Test
     public void testBankTransactionsNoClients() {
-        var inputTopic = getInputTopic();
         var outputTopic = getOutputTopic();
-
 
         Map<String, String> outputMap = outputTopic.readKeyValuesToMap();
         assertThat(outputMap.size()).isEqualTo(0);
@@ -45,16 +48,16 @@ public class BankTransactionAggregatorTest {
         var inputTopic = getInputTopic();
         var outputTopic = getOutputTopic();
 
-        inputTopic.pipeInput("John", "{\"clientName\":\"John\",\"amount\":50.0,\"transactionDateTime\":\"2024-06-01T10:00:00\"}");
+        inputTopic.pipeInput("John", createInputTopicJson("John", BigDecimal.valueOf(50.0), LocalDateTime.of(2024, 6, 1, 10, 0)));
 
         Map<String, String> outputMap = outputTopic.readKeyValuesToMap();
         assertThat(outputMap.size()).isEqualTo(1);
         assertThat(outputMap.get("John"))
                 .isNotNull()
-                .contains("\"clientName\":\"John\"")
-                .contains("\"totalAmount\":50.0")
-                .contains("\"transactionCount\":1")
-                .contains("\"latestTransactionDateTime\":\"2024-06-01T10:00:00\"");
+                .contains(createPairJson("clientName", "John"))
+                .contains(createPairJson("totalAmount", BigDecimal.valueOf(50.0)))
+                .contains(createPairJson("transactionCount", BigDecimal.valueOf(1)))
+                .contains(createPairJson("latestTransactionDateTime", "2024-06-01T10:00:00"));
     }
 
 
@@ -63,24 +66,24 @@ public class BankTransactionAggregatorTest {
         var inputTopic = getInputTopic();
         var outputTopic = getOutputTopic();
 
-        inputTopic.pipeInput("John", "{\"clientName\":\"John\",\"amount\":50.0,\"transactionDateTime\":\"2024-06-01T10:00:00\"}");
-        inputTopic.pipeInput("John", "{\"clientName\":\"John\",\"amount\":25.0,\"transactionDateTime\":\"2024-06-01T11:00:00\"}");
-        inputTopic.pipeInput("Jane", "{\"clientName\":\"Jane\",\"amount\":30.0,\"transactionDateTime\":\"2024-06-01T12:00:00\"}");
+        inputTopic.pipeInput("John", createInputTopicJson("John", BigDecimal.valueOf(50.0), LocalDateTime.of(2024, 6, 1, 10, 0)));
+        inputTopic.pipeInput("John", createInputTopicJson("John", BigDecimal.valueOf(25.0), LocalDateTime.of(2024, 6, 1, 11, 0)));
+        inputTopic.pipeInput("Jane", createInputTopicJson("Jane", BigDecimal.valueOf(30.0), LocalDateTime.of(2024, 6, 1, 12, 0)));
 
         Map<String, String> outputMap = outputTopic.readKeyValuesToMap();
         assertThat(outputMap).hasSize(2);
         assertThat(outputMap.get("John"))
                 .isNotNull()
-                .contains("\"clientName\":\"John\"")
-                .contains("\"totalAmount\":75.0")
-                .contains("\"transactionCount\":2")
-                .contains("\"latestTransactionDateTime\":\"2024-06-01T11:00:00\"");
+                .contains(createPairJson("clientName", "John"))
+                .contains(createPairJson("totalAmount", BigDecimal.valueOf(75.0)))
+                .contains(createPairJson("transactionCount", BigDecimal.valueOf(2)))
+                .contains(createPairJson("latestTransactionDateTime", "2024-06-01T11:00:00"));
         assertThat(outputMap.get("Jane"))
                 .isNotNull()
-                .contains("\"clientName\":\"Jane\"")
-                .contains("\"totalAmount\":30.0")
-                .contains("\"transactionCount\":1")
-                .contains("\"latestTransactionDateTime\":\"2024-06-01T12:00:00\"");
+                .contains(createPairJson("clientName", "Jane"))
+                .contains(createPairJson("totalAmount", BigDecimal.valueOf(30.0)))
+                .contains(createPairJson("transactionCount", BigDecimal.valueOf(1)))
+                .contains(createPairJson("latestTransactionDateTime", "2024-06-01T12:00:00"));
 
     }
 
@@ -94,4 +97,16 @@ public class BankTransactionAggregatorTest {
                 new StringDeserializer(), new StringDeserializer());
     }
 
+    private String createInputTopicJson(String name, BigDecimal amount, LocalDateTime transactionDateTime) {
+        BankTransaction bankTransaction = new BankTransaction(name, amount, transactionDateTime);
+        return jsonMapper.writeValueAsString(bankTransaction);
+    }
+
+    private String createPairJson(String key, String value) {
+        return "\"%s\":\"%s\"" .formatted(key, value);
+    }
+
+    private String createPairJson(String key, BigDecimal value) {
+        return "\"%s\":%s" .formatted(key, value);
+    }
 }

@@ -23,6 +23,10 @@ import java.util.concurrent.CountDownLatch;
 
 @Slf4j
 public class BankTransactionAggregator {
+
+    public static final String BANK_TRANSACTIONS_TOPIC_NAME = "bank.transactions";
+    public static final String BANK_TRANSACTIONS_AGGREGATED_TOPIC_NAME = "bank.transactions.aggregated";
+
     public static void main() throws InterruptedException {
         new BankTransactionAggregator().run();
     }
@@ -50,14 +54,14 @@ public class BankTransactionAggregator {
         StreamsBuilder builder = new StreamsBuilder();
         String initialAggregatedValue = createInitialAggregatedValue();
 
-        KTable<String, String> table = builder.stream("bank.transactions", Consumed.with(Serdes.String(), Serdes.String()))
+        KTable<String, String> table = builder.stream(BANK_TRANSACTIONS_TOPIC_NAME, Consumed.with(Serdes.String(), Serdes.String()))
                 .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
                 .aggregate(() -> initialAggregatedValue,
                         (k, v, aggregatedValue) -> aggregateNewValue(v, aggregatedValue),
                         Materialized.<String, String, KeyValueStore<Bytes, byte[]>>as("aggr").withKeySerde(Serdes.String()).withValueSerde(Serdes.String())
                 );
 
-        table.toStream().to("bank.transactions.aggregated", Produced.with(Serdes.String(), Serdes.String()));
+        table.toStream().to(BANK_TRANSACTIONS_AGGREGATED_TOPIC_NAME, Produced.with(Serdes.String(), Serdes.String()));
         return builder.build();
     }
 

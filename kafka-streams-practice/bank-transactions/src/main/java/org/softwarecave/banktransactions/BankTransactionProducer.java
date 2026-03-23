@@ -13,6 +13,9 @@ import java.util.Properties;
 
 @Slf4j
 public class BankTransactionProducer {
+
+    public static final String BANK_TRANSACTIONS_TOPIC_NAME = "bank.transactions";
+
     public static void main() throws InterruptedException {
         new BankTransactionProducer().run();
     }
@@ -21,7 +24,7 @@ public class BankTransactionProducer {
 
     public void run() throws InterruptedException {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:29092");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         // The other settings are not needed as defaults are fine in recent Kafka versions
@@ -51,7 +54,7 @@ public class BankTransactionProducer {
         JsonMapper mapper = new JsonMapper();
         String transactionJson = mapper.writeValueAsString(transaction);
 
-        var producerRecord = new ProducerRecord<String, String>("bank.transactions", clientName, transactionJson);
+        var producerRecord = new ProducerRecord<>(BANK_TRANSACTIONS_TOPIC_NAME, clientName, transactionJson);
         producer.send(producerRecord);
     }
 }
