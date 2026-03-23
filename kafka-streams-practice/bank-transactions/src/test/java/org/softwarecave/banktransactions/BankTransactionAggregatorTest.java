@@ -88,12 +88,12 @@ public class BankTransactionAggregatorTest {
     }
 
     private TestInputTopic<String, String> getInputTopic() {
-        return testDriver.createInputTopic("bank.transactions",
+        return testDriver.createInputTopic(BankTransactionAggregator.BANK_TRANSACTIONS_TOPIC_NAME,
                 new StringSerializer(), new StringSerializer());
     }
 
     private TestOutputTopic<String, String> getOutputTopic() {
-        return testDriver.createOutputTopic("bank.transactions.aggregated",
+        return testDriver.createOutputTopic(BankTransactionAggregator.BANK_TRANSACTIONS_AGGREGATED_TOPIC_NAME,
                 new StringDeserializer(), new StringDeserializer());
     }
 
@@ -103,10 +103,10 @@ public class BankTransactionAggregatorTest {
     }
 
     private String createPairJson(String key, String value) {
-        return "\"%s\":\"%s\"" .formatted(key, value);
+        return "\"%s\":\"%s\"".formatted(key, value);
     }
 
     private String createPairJson(String key, BigDecimal value) {
-        return "\"%s\":%s" .formatted(key, value);
+        return "\"%s\":%s".formatted(key, value);
     }
 }
