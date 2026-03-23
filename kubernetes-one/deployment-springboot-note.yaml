@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-note-deployment
+  namespace: development
+  labels:
+    app: springboot-note
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: springboot-note
+  template:
+    metadata:
+      labels:
+        app: springboot-note
+    spec:
+      containers:
+      - name: springboot-note
+        image: robertp22/springboot-note:latest
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+          #readOnlyRootFilesystem: true
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://postgres-service.development.svc.cluster.local:5432/postgres
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+                name: postgres
+                key: username
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+                name: postgres
+                key: password
+        - name: APP_KAFKA_ENABLED
+          value: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-note-service
+  namespace: development
+spec:
+  selector:
+    app: springboot-note
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
