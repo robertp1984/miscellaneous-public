@@ -10,13 +10,13 @@ public class Main {
     public static final String INPUT_TOPIC = "playground.stickynote";
     public static final String OUTPUT_TOPIC = "playground.stickynote.categorized";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ParsedArgs parsedArgs = parseArgs(args);
         if (parsedArgs == null) {
             return;
         }
 
-        NoteCategorizerApp app = new NoteCategorizerApp(parsedArgs.bootstrapServers(), parsedArgs.inputTopic(),
+        StickyNoteCategorizerApp app = new StickyNoteCategorizerApp(parsedArgs.bootstrapServers(), parsedArgs.inputTopic(),
                 parsedArgs.outputTopic());
         app.run();
     }

@@ -7,7 +7,7 @@ public enum Category {
     KAFKA("Kafka", "Apache Kafka and its ecosystem"),
     GIT("Git", "Git version control system"),
     DOCKER("Docker", "Docker containerization"),
-    CLOUD("CLOUD", "cloud computing platforms");
+    CLOUD("Cloud", "cloud computing platforms");
 
     private final String name;
     private final String description;

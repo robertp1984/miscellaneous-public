@@ -1,7 +1,9 @@
 package org.softwarecave.springbootnotecategorizer;
 
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.softwarecave.springbootnotecategorizer.categorizer.Categorizer;
 import org.softwarecave.springbootnotecategorizer.categorizer.CategorizerResults;
@@ -17,7 +19,10 @@ public class StickyNoteModifier {
     private final Categorizer categorizer;
 
     public StickyNoteModifier(String objectJson, Categorizer categorizer) {
-        documentContext = JsonPath.parse(objectJson);
+        Configuration configuration = Configuration.defaultConfiguration()
+                .addOptions(Option.SUPPRESS_EXCEPTIONS);
+
+        documentContext = JsonPath.parse(objectJson, configuration);
         this.categorizer = categorizer;
     }
 

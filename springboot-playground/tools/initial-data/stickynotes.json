@@ -42,5 +42,16 @@
       }
     ],
     "created": "2026-01-25T12:00:00"
+  },
+  {
+    "title": "Initialize Spring Boot project in seconds",
+    "body": "Just go to https://start.spring.io/ and select the dependencies you need. You can download the Spring Boot project as a zip file and import it in your favourite IDE.",
+    "type": "PLAIN_TEXT",
+    "stickyNoteLinks": [
+      {
+        "link": "https://start.spring.io/"
+      }
+    ],
+    "created": "2026-03-11T10:00:00"
   }
 ]
