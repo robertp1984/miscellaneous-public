@@ -19,7 +19,7 @@ import java.security.SecureRandom;
 @Slf4j
 public class ImageGenerationService {
 
-    private final String IMAGE_GEN_MODEL = "amazon.titan-image-generator-v2:0";
+    private final String IMAGE_GEN_MODEL = "amazon.nova-canvas-v1:0";
 
     private final ObjectMapper objectMapper;
 
@@ -48,8 +48,15 @@ public class ImageGenerationService {
         var requestTemplate = """
                 {
                     "taskType": "TEXT_IMAGE",
-                    "textToImageParams": { "text": "{{prompt}}" },
-                    "imageGenerationConfig": { "seed": {{seed}} }
+                    "textToImageParams": {
+                        "text": "{{prompt}}"
+                     },
+                    "imageGenerationConfig": {
+                        "width": 1024,
+                        "height": 768,
+                        "quality": "standard",
+                        "cfgScale": 6.5,
+                        "seed": {{seed}} }
                 }""";
 
         var seed = new BigInteger(31, new SecureRandom());
