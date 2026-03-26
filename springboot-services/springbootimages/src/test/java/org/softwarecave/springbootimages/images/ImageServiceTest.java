@@ -11,6 +11,7 @@ import org.softwarecave.springbootimages.bedrock.ImageGenerationService;
 import org.softwarecave.springbootimages.images.model.Image;
 import org.softwarecave.springbootimages.images.model.ImageBuilder;
 import org.softwarecave.springbootimages.images.model.NoSuchImageException;
+import org.softwarecave.springbootimages.images.service.GenerateImageParams;
 import org.softwarecave.springbootimages.images.service.ImageRepository;
 import org.softwarecave.springbootimages.images.service.ImageService;
 import org.softwarecave.springbootimages.messaging.QueueSender;
@@ -98,12 +99,13 @@ public class ImageServiceTest {
 
     @Test
     void generateAndSaveImageByDescription_generatesSavesAndReturnsImage() throws JsonProcessingException {
-        when(imageGenerationService.generateImageByDescription("desc")).thenReturn(sampleImage);
+        GenerateImageParams request = new GenerateImageParams("desc", 800L, 600L);
+        when(imageGenerationService.generateImage(request)).thenReturn(sampleImage);
 
-        Image result = imageService.generateAndSaveImageByDescription("desc");
+        Image result = imageService.generateAndSaveImage(request);
 
         assertThat(result).isSameAs(sampleImage);
-        verify(imageGenerationService).generateImageByDescription("desc");
+        verify(imageGenerationService).generateImage(request);
         verify(imageRepository).save(sampleImage);
         verify(queueSender).publishImagesSavedMessage(any());
 

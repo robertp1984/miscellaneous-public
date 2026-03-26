@@ -1,9 +1,12 @@
 package org.softwarecave.springbootimages.bedrock;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.softwarecave.springbootimages.images.model.Image;
+import org.softwarecave.springbootimages.images.service.GenerateImageParams;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -13,6 +16,7 @@ import software.amazon.awssdk.services.bedrockruntime.BedrockRuntimeClient;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -27,43 +31,38 @@ public class ImageGenerationService {
         this.objectMapper = objectMapper;
     }
 
-    public Image generateImageByDescription(@NonNull String description) {
-        String jsonRequest = createRequest(description);
-
+    public Image generateImage(@NonNull GenerateImageParams params) {
         try (BedrockRuntimeClient client = createClient()) {
+
+            String jsonRequest = createRequest(params);
 
             var response = client.invokeModel(request -> request.body(SdkBytes.fromUtf8String(jsonRequest))
                     .modelId(IMAGE_GEN_MODEL)
                     .accept(BedrockImageParser.IMAGE_MEDIA_TYPE));
 
-            return new BedrockImageParser(objectMapper).parseResponse(description, response.body().asByteArray());
+            return new BedrockImageParser(objectMapper).parseResponse(params.getDescription(), response.body().asByteArray());
         } catch (Exception e) {
             log.error("Failed to generate image {} ", e.getMessage(), e);
-            throw new ImageGenerationException("Could not generate image with description=%s".formatted(description), e);
+            throw new ImageGenerationException("Could not generate image with description=%s".formatted(params.getDescription()), e);
         }
     }
 
 
-    private String createRequest(String description) {
-        var requestTemplate = """
-                {
-                    "taskType": "TEXT_IMAGE",
-                    "textToImageParams": {
-                        "text": "{{prompt}}"
-                     },
-                    "imageGenerationConfig": {
-                        "width": 1024,
-                        "height": 768,
-                        "quality": "standard",
-                        "cfgScale": 6.5,
-                        "seed": {{seed}} }
-                }""";
-
+    private String createRequest(GenerateImageParams request) throws JsonProcessingException {
         var seed = new BigInteger(31, new SecureRandom());
 
-        return requestTemplate
-                .replace("{{prompt}}", description)
-                .replace("{{seed}}", seed.toString());
+        ObjectNode rootNode = objectMapper.createObjectNode();
+        rootNode.put("taskType", "TEXT_IMAGE");
+        rootNode.putObject("textToImageParams")
+                .put("text", request.getDescription());
+        rootNode.putObject("imageGenerationConfig")
+                .put("width", Optional.ofNullable(request.getWidth()).orElse(1024L))
+                .put("height", Optional.ofNullable(request.getHeight()).orElse(768L))
+                .put("quality", "standard")
+                .put("cfgScale", 6.5)
+                .put("seed", seed);
+
+        return objectMapper.writeValueAsString(rootNode);
     }
 
     private BedrockRuntimeClient createClient() {
@@ -72,4 +71,5 @@ public class ImageGenerationService {
                 .region(Region.US_EAST_1)
                 .build();
     }
+
 }

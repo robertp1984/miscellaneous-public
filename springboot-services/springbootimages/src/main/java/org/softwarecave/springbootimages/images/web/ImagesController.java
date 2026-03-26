@@ -7,8 +7,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.softwarecave.springbootimages.images.model.Image;
 import org.softwarecave.springbootimages.images.model.ImageBuilder;
+import org.softwarecave.springbootimages.images.service.GenerateImageParams;
 import org.softwarecave.springbootimages.images.service.ImageService;
 import org.softwarecave.springbootimages.images.model.NoSuchImageException;
+import org.softwarecave.springbootimages.images.web.converter.GenerateImageParamsConverter;
 import org.softwarecave.springbootimages.images.web.converter.ImageDTOConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,15 +62,17 @@ public class ImagesController {
         log.info("Image uploaded ID={}", imageObject.getId());
     }
 
-    @PostMapping(value = "/newGeneratedImage", consumes = MediaType.TEXT_PLAIN_VALUE,
+    @PostMapping(value = "/generatedImage",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Generates a new image using AI and stores into database",
-            description = "The operation can be accessed by sending string 'sunny day' using post to this sample URI http://localhost:8081/images/newGeneratedImage/ The generated image will be returned in the response.")
-    public ResponseEntity<byte[]> newGeneratedImageByDescription(@RequestBody @NonNull String description) throws IOException {
-        log.info("Generating a new image with description {}", description);
+            description = "The operation can be accessed by sending request object with description 'sunny day' using post to this sample URI http://localhost:8081/images/generatedImage/ The generated image will be returned in the response.")
+    public ResponseEntity<byte[]> newGeneratedImage(@RequestBody @NonNull GenerateImageParamsDTO paramsDTO) throws IOException {
+        GenerateImageParams params = GenerateImageParamsConverter.toRequest(paramsDTO);
+        log.info("Generating a new image with params {}", params);
 
-        Image imageObject = imageService.generateAndSaveImageByDescription(description);
+        Image imageObject = imageService.generateAndSaveImage(params);
 
         log.info("Image generated and uploaded with id={}", imageObject.getId());
         return ResponseEntity.ok()

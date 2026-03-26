@@ -47,8 +47,8 @@ public class ImageService {
         }
     }
 
-    public Image generateAndSaveImageByDescription(@NonNull String description) throws JsonProcessingException {
-        Image image = imageGenerationService.generateImageByDescription(description);
+    public Image generateAndSaveImage(@NonNull GenerateImageParams params) throws JsonProcessingException {
+        Image image = imageGenerationService.generateImage(params);
         saveImage(image);
         return image;
     }
