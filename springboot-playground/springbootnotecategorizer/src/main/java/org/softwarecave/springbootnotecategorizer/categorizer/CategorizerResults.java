@@ -3,6 +3,7 @@ package org.softwarecave.springbootnotecategorizer.categorizer;
 import org.softwarecave.springbootnotecategorizer.Category;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -11,6 +12,10 @@ public class CategorizerResults {
 
     public CategorizerResults() {
         this.results = new ArrayList<>();
+    }
+
+    public CategorizerResults(Collection<CategorizerResult> results) {
+        this.results = new ArrayList<>(results);
     }
 
     public void addResult(Category category, double score) {
